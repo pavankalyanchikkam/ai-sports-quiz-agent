@@ -42,34 +42,38 @@ if st.sidebar.button("Generate Quiz 🚀", use_container_width=True):
                 st.markdown("### Your Custom Quiz")
                 
                 # --- STEP 2: DYNAMICALLY PARSE QUESTIONS INTO INTERACTIVE CARDS ---
-                # Split the raw output text into individual questions using the '---' delimiter
+# --- FACTOR-PROOFED INTERACTIVE QUESTION CARD PARSING ---
                 raw_questions = [q.strip() for q in quiz_output.split("---") if q.strip()]
                 
                 for idx, q_block in enumerate(raw_questions):
-                    # Check if the block contains answer information
                     if "Correct Answer:" in q_block:
-                        # Separate the question/options from the answer/explanation
+                        # Split by the main label text
                         parts = q_block.split("Correct Answer:")
-                        question_and_options = parts[0].strip()
-                        answer_and_explanation = "**Correct Answer:** " + parts[1].strip()
                         
-                        # Render the question block inside a clean UI container
+                        # Clean up the question text and strip any left-over markdown bold stars
+                        question_and_options = parts[0].strip().rstrip("*").strip()
+                        
+                        # Isolate the remaining answer and explanation segment
+                        raw_answer_segment = parts[1].strip().lstrip("*").strip().lstrip(":").strip()
+                        
+                        # Sub-split the explanation out to build a pristine layout inside the card
+                        if "Explanation:" in raw_answer_segment:
+                            exp_parts = raw_answer_segment.split("Explanation:")
+                            correct_letter = exp_parts[0].strip().replace("**", "").replace(":", "").strip()
+                            explanation_content = exp_parts[1].strip().replace("**", "").replace(":", "").strip()
+                            
+                            final_dropdown_text = f"🎯 **Correct Answer:** {correct_letter}\n\n📝 **Explanation:** {explanation_content}"
+                        else:
+                            clean_letter = raw_answer_segment.replace("**", "").replace(":", "").strip()
+                            final_dropdown_text = f"🎯 **Correct Answer:** {clean_letter}"
+                        
+                        # Render cleanly into the interface container
                         with st.container(border=True):
                             st.markdown(question_and_options)
                             
-                            # Interactive dropdown: Hides the answer until the user clicks it!
                             with st.expander(f"💡 Reveal Answer & Explanation for Question {idx + 1}"):
-                                st.markdown(answer_and_explanation)
+                                st.markdown(final_dropdown_text)
                     else:
-                        # Fallback case if formatting varies slightly
+                        # Safe fallback layout block
                         with st.container(border=True):
                             st.markdown(q_block)
-                
-                st.divider()
-                
-                # Ground Truth Expander at the very bottom
-                with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
-                    st.code(context_used, language="markdown")
-                
-            except Exception as e:
-                st.error(f"An error occurred during generation: {e}")
