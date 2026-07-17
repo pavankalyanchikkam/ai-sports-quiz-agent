@@ -38,9 +38,9 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
     except Exception as e:
         web_context = "Web search currently unavailable."
     
-    # 5. Construct the Augmented Prompt
+    # 5. Construct the Augmented Prompt (Updated to strictly demand 4 questions)
     prompt = f"""
-    You are an expert sports quiz master. Your task is to generate a 3-question multiple-choice quiz about {sport} at a {difficulty} difficulty level.
+    You are an expert sports quiz master. Your task is to generate a 4-question multiple-choice quiz about {sport} at a {difficulty} difficulty level.
     
     Use the following verified context to build your questions. Do not hallucinate outside of this information if possible.
     
@@ -56,6 +56,13 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
     3. The Correct Answer explicitly stated on a new line below the options.
     """
     
-    # 6. Generate and return the LLM response
+    # 6. Generate the LLM response
     response = llm.invoke(prompt)
+    
+    # 7. Clean the output to remove raw dictionary/signature structures
+    if isinstance(response.content, list):
+        # Extracts only the clean text portion if the model returns a multi-modal block
+        clean_text = "".join([block.get("text", "") for block in response.content if isinstance(block, dict) and "text" in block])
+        return clean_text
+        
     return response.content
