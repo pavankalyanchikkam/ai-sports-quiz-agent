@@ -56,4 +56,3 @@ if st.button("Generate Quiz 🚀", use_container_width=True):
                 st.error(f"An error occurred during generation: {e}")
 
 st.divider()
-st.caption("Built with Python, Streamlit, LangChain, ChromaDB, and Google Gemini for NxtWave.")
