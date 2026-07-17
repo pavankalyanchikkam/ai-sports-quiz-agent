@@ -1,4 +1,5 @@
 import os
+import streamlit as st
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.tools import DuckDuckGoSearchRun
 from utils.database import get_vector_store
@@ -7,13 +8,20 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
     """
     Executes the RAG pipeline: retrieves local facts, searches the web, and generates a quiz.
     """
-    # 1. Initialize the LLM (Gemini 1.5 Flash is excellent for speed and reasoning)
+    # 1. Safely pull the API key
+    if "GOOGLE_API_KEY" in st.secrets:
+        api_key = st.secrets["GOOGLE_API_KEY"]
+    else:
+        api_key = os.getenv("GOOGLE_API_KEY")
+
+    # 2. Initialize the LLM explicitly passing the key
     llm = ChatGoogleGenerativeAI(
         model="gemini-1.5-flash",
-        temperature=0.7 # Adds slight creativity for varied question formats
+        temperature=0.7,
+        google_api_key=api_key
     )
     
-    # 2. Retrieve Local Context (from ChromaDB)
+    # 3. Retrieve Local Context (from ChromaDB)
     vector_store = get_vector_store()
     retriever = vector_store.as_retriever(search_kwargs={"k": 2})
     local_docs = retriever.invoke(sport)
@@ -23,15 +31,14 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
     else:
         local_context = "No specific local facts found."
     
-    # 3. Retrieve Live Internet Context (from DuckDuckGo)
+    # 4. Retrieve Live Internet Context (from DuckDuckGo)
     search_tool = DuckDuckGoSearchRun()
     try:
-        # Search the web for recent/historical facts about the sport
         web_context = search_tool.run(f"Top {sport} historical facts and recent trivia")
     except Exception as e:
         web_context = "Web search currently unavailable."
     
-    # 4. Construct the Augmented Prompt
+    # 5. Construct the Augmented Prompt
     prompt = f"""
     You are an expert sports quiz master. Your task is to generate a 3-question multiple-choice quiz about {sport} at a {difficulty} difficulty level.
     
@@ -49,6 +56,6 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
     3. The Correct Answer explicitly stated on a new line below the options.
     """
     
-    # 5. Generate and return the LLM response
+    # 6. Generate and return the LLM response
     response = llm.invoke(prompt)
     return response.content
