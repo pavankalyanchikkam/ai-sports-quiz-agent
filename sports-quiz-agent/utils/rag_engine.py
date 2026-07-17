@@ -36,6 +36,7 @@ def generate_sports_quiz(sport: str, difficulty: str) -> tuple:
         
     unified_context = f"=== HISTORICAL FACTS (ChromaDB) ===\n{local_context}\n\n=== LIVE NEWS (DuckDuckGo) ===\n{web_context}"
     
+
     prompt = f"""
     You are an expert sports quiz master. Your task is to generate a 4-question multiple-choice quiz about {sport} at a {difficulty} difficulty level.
     
@@ -44,15 +45,20 @@ def generate_sports_quiz(sport: str, difficulty: str) -> tuple:
     CONTEXT DETAILS:
     {unified_context}
     
-    Format each question EXACTLY as follows:
+    Format each question EXACTLY as follows with clear double line breaks between lines:
+    
     ### Question [Number]
     [Question text here]
-    * A) [Option A]
-    * B) [Option B]
-    * C) [Option C]
-    * D) [Option D]
+    
+    A) [Option A]
+    B) [Option B]
+    C) [Option C]
+    D) [Option D]
+    
     **Correct Answer:** [Single Letter, e.g., A]
+    
     **Explanation:** [Detailed background reasoning quoting from the context details]
+    
     ---
     """
     
