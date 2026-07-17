@@ -2,31 +2,19 @@ import os
 import streamlit as st
 import chromadb
 from langchain_chroma import Chroma
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 def get_vector_store():
     """
-    Initializes and returns the ChromaDB vector store using Google GenAI embeddings.
+    Initializes and returns the ChromaDB vector store using local HuggingFace embeddings.
     """
-    # 1. Safely pull the API key (works on Streamlit Cloud and locally)
-    if "GOOGLE_API_KEY" in st.secrets:
-        api_key = st.secrets["GOOGLE_API_KEY"]
-    else:
-        api_key = os.getenv("GOOGLE_API_KEY")
-        
-    if not api_key:
-        raise ValueError("API Key is missing! Please check Streamlit Secrets.")
-
-    # 2. Initialize the embedding model explicitly passing the key
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-004",
-        google_api_key=api_key
-    )
+    # 1. Initialize a fast, local embedding model (Bypasses Google API completely)
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     
-    # 3. Directory to store the local database persistently
+    # 2. Directory to store the local database persistently
     persist_directory = "./chroma_db"
     
-    # 4. Create or load the vector store
+    # 3. Create or load the vector store
     vector_store = Chroma(
         collection_name="sports_facts",
         embedding_function=embeddings,
