@@ -13,7 +13,7 @@ def initialize_app():
 
 initialize_app()
 
-st.set_page_config(page_title="AI Sports Quiz Agent", page_icon="🏆")
+st.set_page_config(page_title="AI Sports Quiz Agent", page_icon="🏆", layout="wide")
 
 st.title("🏆 AI-Powered Sports Quiz Agent")
 st.markdown("""
