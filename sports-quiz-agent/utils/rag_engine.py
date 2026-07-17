@@ -16,7 +16,7 @@ def generate_sports_quiz(sport: str, difficulty: str) -> str:
 
     # 2. Initialize the LLM explicitly passing the key
     llm = ChatGoogleGenerativeAI(
-        model="gemini-1.5-flash",
+        model="gemini-1.5-flash-latest",
         temperature=0.7,
         google_api_key=api_key
     )
