@@ -24,7 +24,7 @@ It pulls context from a local **ChromaDB** and live **web searches** before gene
 
 st.divider()
 
-# Sidebar Settings
+# --- STEP 2: SIDEBAR SETTINGS ---
 st.sidebar.header("Quiz Settings")
 sport_input = st.sidebar.text_input("Enter a Sport:", placeholder="e.g., Cricket")
 difficulty_level = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
@@ -41,8 +41,7 @@ if st.sidebar.button("Generate Quiz 🚀", use_container_width=True):
                 st.success("Quiz Generated Successfully!")
                 st.markdown("### Your Custom Quiz")
                 
-                # --- STEP 2: DYNAMICALLY PARSE QUESTIONS INTO INTERACTIVE CARDS ---
-# --- FACTOR-PROOFED INTERACTIVE QUESTION CARD PARSING ---
+                # --- STEP 3: FACTOR-PROOFED INTERACTIVE QUESTION CARD PARSING ---
                 raw_questions = [q.strip() for q in quiz_output.split("---") if q.strip()]
                 
                 for idx, q_block in enumerate(raw_questions):
@@ -77,3 +76,12 @@ if st.sidebar.button("Generate Quiz 🚀", use_container_width=True):
                         # Safe fallback layout block
                         with st.container(border=True):
                             st.markdown(q_block)
+                
+                st.divider()
+                
+                # --- STEP 4: GROUND TRUTH AUDIT EXPANDER ---
+                with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
+                    st.code(context_used, language="markdown")
+                
+            except Exception as e:
+                st.error(f"An error occurred during generation: {e}")
