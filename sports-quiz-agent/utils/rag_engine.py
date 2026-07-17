@@ -34,10 +34,8 @@ def generate_sports_quiz(sport: str, difficulty: str) -> tuple:
     except Exception as e:
         web_context = "Web search currently unavailable."
         
-    # Combine context for the audit expander
     unified_context = f"=== HISTORICAL FACTS (ChromaDB) ===\n{local_context}\n\n=== LIVE NEWS (DuckDuckGo) ===\n{web_context}"
     
-    # Updated Prompt: Strictly demanding 4 questions and Explanations
     prompt = f"""
     You are an expert sports quiz master. Your task is to generate a 4-question multiple-choice quiz about {sport} at a {difficulty} difficulty level.
     
@@ -65,7 +63,3 @@ def generate_sports_quiz(sport: str, difficulty: str) -> tuple:
         return clean_text, unified_context
         
     return response.content, unified_context
-        clean_text = "".join([block.get("text", "") for block in response.content if isinstance(block, dict) and "text" in block])
-        return clean_text
-        
-    return response.content
