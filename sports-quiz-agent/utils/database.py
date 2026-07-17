@@ -19,7 +19,7 @@ def get_vector_store():
 
     # 2. Initialize the embedding model explicitly passing the key
     embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/embedding-001",
+        model="models/embedding-004",
         google_api_key=api_key
     )
     
