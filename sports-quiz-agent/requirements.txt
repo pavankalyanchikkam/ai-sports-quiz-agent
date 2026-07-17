@@ -7,3 +7,4 @@ chromadb
 duckduckgo-search
 python-dotenv
 langchain-community
+sentence-transformers
