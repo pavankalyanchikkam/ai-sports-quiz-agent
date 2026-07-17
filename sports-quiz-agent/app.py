@@ -23,7 +23,6 @@ It pulls context from a local **ChromaDB** and live **web searches** before gene
 
 st.divider()
 
-# --- MOVED TO SIDEBAR AS PER INSTRUCTIONS ---
 st.sidebar.header("Quiz Settings")
 sport_input = st.sidebar.text_input("Enter a Sport:", placeholder="e.g., Cricket")
 difficulty_level = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
@@ -35,14 +34,12 @@ if st.sidebar.button("Generate Quiz 🚀", use_container_width=True):
     else:
         with st.spinner(f"Agent is scanning databases and the web for {sport_input} facts..."):
             try:
-                # Now unpacks BOTH the quiz output and the context used
                 quiz_output, context_used = generate_sports_quiz(sport_input, difficulty_level)
                 
                 st.success("Quiz Generated Successfully!")
                 st.markdown("### Your Custom Quiz")
                 st.info(quiz_output)
                 
-                # --- ADDED AUDIT EXPANDER AS PER INSTRUCTIONS ---
                 with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
                     st.code(context_used, language="markdown")
                 
