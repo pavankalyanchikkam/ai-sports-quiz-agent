@@ -1,5 +1,6 @@
-from openai import OpenAI
-from src.config import OPENAI_API_KEY
+from google import genai
+from google.genai import types
+from src.config import GOOGLE_API_KEY
 from src.database import query_historic_facts
 from src.search import get_live_news_context
 
@@ -8,7 +9,7 @@ def compile_quiz_data(sport, difficulty):
     1. Gathers context from ChromaDB (Historical).
     2. Gathers context from DuckDuckGo (Live news).
     3. Blends them inside a grounded prompt.
-    4. Connects to OpenAI and generates the structured quiz.
+    4. Connects to Gemini and generates the structured quiz.
     """
     # Create query to run against ChromaDB
     db_query = f"{sport} history cup championships rules records"
@@ -21,8 +22,8 @@ def compile_quiz_data(sport, difficulty):
     # Combine historical and web contexts
     unified_context = f"=== HISTORICAL FACTS ===\n{db_context}\n\n=== LIVE INTERNET NEWS ===\n{web_context}"
 
-    # Instantiate the API client
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    # Instantiate the Gemini API client
+    client = genai.Client(api_key=GOOGLE_API_KEY)
 
     # Constructing a structured system prompt
     system_instruction = (
@@ -48,13 +49,13 @@ def compile_quiz_data(sport, difficulty):
     )
 
     # Make API call
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo", # Or "gpt-4o"
-        messages=[
-            {"role": "system", "content": system_instruction},
-            {"role": "user", "content": user_prompt}
-        ],
-        temperature=0.7
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        config=types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            temperature=0.7,
+        ),
+        contents=user_prompt
     )
 
-    return response.choices[0].message.content, unified_context
+    return response.text, unified_context
