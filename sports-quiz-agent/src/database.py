@@ -8,33 +8,24 @@ def get_chroma_client():
     return chromadb.PersistentClient(path="./chroma_db")
 
 def setup_and_populate_db(json_file_path="./data/sports_facts.json"):
-    """
-    Reads the offline JSON facts, creates a collection, and populates it.
-    This only needs to be run once, or when your local data changes.
-    """
+    """Reads the offline JSON facts, creates a collection, and populates it."""
     client = get_chroma_client()
-
-    # Using ChromaDB's default embedding function (sentence-transformers)
-    # Alternatively, you can use OpenAI's embedding API
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
 
-    # Get or create collection
+    # FORCED NEW COLLECTION NAME to bypass cache issues
     collection = client.get_or_create_collection(
-        name="sports_history_v2",
+        name="sports_knowledge_base_v1",
         embedding_function=embedding_fn
     )
 
-    # Check if the database has already been populated
     if collection.count() > 0:
         print(f"Database already populated with {collection.count()} facts.")
         return collection
 
-    # Check if data file exists
     if not os.path.exists(json_file_path):
         print(f"Error: Raw fact data file not found at {json_file_path}")
         return collection
 
-    # Load and parse facts
     with open(json_file_path, "r") as f:
         facts_list = json.load(f)
 
@@ -44,11 +35,9 @@ def setup_and_populate_db(json_file_path="./data/sports_facts.json"):
 
     for idx, item in enumerate(facts_list):
         documents.append(item["fact"])
-        # Storing metadata allows us to filter queries by sport later!
         metadata_list.append({"sport": item["sport"]})
         ids.append(f"fact_{idx}")
 
-    # Bulk add vectors to collection
     collection.add(
         documents=documents,
         metadatas=metadata_list,
@@ -58,20 +47,16 @@ def setup_and_populate_db(json_file_path="./data/sports_facts.json"):
     return collection
 
 def query_historic_facts(sport, query_text, n_results=2):
-    """
-    Queries ChromaDB for historic documents relating to a sport.
-    Filters database elements to match the selected sport category.
-    """
+    """Queries ChromaDB for historic documents relating to a sport."""
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
+    
     collection = client.get_or_create_collection(
-        name="sports_history_v2",
+        name="sports_knowledge_base_v1",
         embedding_function=embedding_fn
     )
 
-    # Query with metadata filtering so we only get facts for our target sport
     try:
-        # Check how many documents exist for this sport to avoid n_results errors
         sport_docs = collection.get(where={"sport": sport})
         available_count = len(sport_docs["ids"])
 
@@ -79,7 +64,6 @@ def query_historic_facts(sport, query_text, n_results=2):
             print(f"No facts found in ChromaDB for sport: {sport}")
             return []
 
-        # Use minimum of requested and available to prevent ChromaDB errors
         actual_n = min(n_results, available_count)
 
         results = collection.query(
@@ -88,7 +72,6 @@ def query_historic_facts(sport, query_text, n_results=2):
             where={"sport": sport}
         )
 
-        # Return matched documents list (or empty list if none found)
         return results.get("documents", [[]])[0]
 
     except Exception as e:
