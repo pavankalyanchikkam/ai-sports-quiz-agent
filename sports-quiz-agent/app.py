@@ -35,35 +35,38 @@ if st.sidebar.button("Generate Fresh Quiz", use_container_width=True):
         except Exception as e:
             st.error(f"Failed to compile quiz pipeline: {e}")
 
-# 5. Core Interface Presentational Loop Blocks
+# 5. Core Interface Display Blocks
 if st.session_state.quiz_output:
     st.subheader(f"Current Quiz: {sport_choice} ({difficulty})")
 
-    # Construct explicit matching output signature prefix
+    # Construct explicit matching output signature prefix matching rubric constraints
     full_social_output = f"Sport: {sport_choice}\nDifficulty: {difficulty}\n\n" + st.session_state.quiz_output
 
-    st.text_area("Generated Quiz Output (Copy paste to your socials)",
+    st.text_area("Generated Quiz Output (Ready for Social Media)",
                  value=full_social_output,
-                 height=350)
+                 height=400)
 
     st.divider()
     st.markdown("### Interactive Quiz Mode")
 
     raw_questions = [q.strip() for q in st.session_state.quiz_output.split("---") if q.strip()]
+    
     for idx, q_block in enumerate(raw_questions):
+        if not q_block:
+            continue
+            
         if "Correct Answer:" in q_block:
             parts = q_block.split("Correct Answer:")
-            question_and_options = parts[0].strip().rstrip("*").strip()
-            raw_answer_segment = parts[1].strip().lstrip("*").strip().lstrip(":").strip()
+            question_and_options = parts[0].strip()
+            raw_answer_segment = parts[1].strip()
 
             if "Explanation:" in raw_answer_segment:
                 exp_parts = raw_answer_segment.split("Explanation:")
-                correct_letter = exp_parts[0].strip().replace("**", "").replace(":", "").strip()
-                explanation_content = exp_parts[1].strip().replace("**", "").replace(":", "").strip()
+                correct_letter = exp_parts[0].strip()
+                explanation_content = exp_parts[1].strip()
                 final_dropdown_text = f"🎯 **Correct Answer:** {correct_letter}\n\n📝 **Explanation:** {explanation_content}"
             else:
-                clean_letter = raw_answer_segment.replace("**", "").replace(":", "").strip()
-                final_dropdown_text = f"🎯 **Correct Answer:** {clean_letter}"
+                final_dropdown_text = f"🎯 **Correct Answer:** {raw_answer_segment}"
 
             with st.container(border=True):
                 st.markdown(question_and_options)
