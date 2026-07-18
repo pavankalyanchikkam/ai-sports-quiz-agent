@@ -1,10 +1,6 @@
-streamlit
-langchain
-langchain-core
-langchain-google-genai
-langchain-chroma
-chromadb
-ddgs
-python-dotenv
-langchain-community
-sentence-transformers
+streamlit>=1.30.0
+chromadb>=0.4.22
+duckduckgo-search>=4.4.1
+openai>=1.10.0
+python-dotenv>=1.0.1
+sentence-transformers>=2.3.0
