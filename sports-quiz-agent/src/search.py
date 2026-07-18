@@ -13,7 +13,11 @@ def get_live_news_context(sport_name):
         # Initializing DuckDuckGo search context
         with DDGS() as ddgs:
             # We fetch the top 3 text search results
-            results = ddgs.text(search_query, max_results=3)
+            results = list(ddgs.text(search_query, max_results=3))
+
+            if not results:
+                # Retry with a simpler query if first attempt returns nothing
+                results = list(ddgs.text(f"{sport_name} sports news", max_results=3))
 
             for index, r in enumerate(results, start=1):
                 title = r.get("title", "No Title")
