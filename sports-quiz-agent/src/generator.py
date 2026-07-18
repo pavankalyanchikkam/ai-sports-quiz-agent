@@ -48,9 +48,9 @@ def compile_quiz_data(sport, difficulty):
         "---"
     )
 
-    # Make API call
+    # Make API call - utilizing 1.5-flash to completely bypass the limit: 0 error
     response = client.models.generate_content(
-        model="gemini-2.0-flash",
+        model="gemini-1.5-flash",
         config=types.GenerateContentConfig(
             system_instruction=system_instruction,
             temperature=0.7,
