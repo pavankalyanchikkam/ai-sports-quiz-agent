@@ -70,11 +70,27 @@ def query_historic_facts(sport, query_text, n_results=2):
     )
 
     # Query with metadata filtering so we only get facts for our target sport
-    results = collection.query(
-        query_texts=[query_text],
-        n_results=n_results,
-        where={"sport": sport}
-    )
+    try:
+        # Check how many documents exist for this sport to avoid n_results errors
+        sport_docs = collection.get(where={"sport": sport})
+        available_count = len(sport_docs["ids"])
 
-    # Return matched documents list (or empty list if none found)
-    return results.get("documents", [[]])[0]
+        if available_count == 0:
+            print(f"No facts found in ChromaDB for sport: {sport}")
+            return []
+
+        # Use minimum of requested and available to prevent ChromaDB errors
+        actual_n = min(n_results, available_count)
+
+        results = collection.query(
+            query_texts=[query_text],
+            n_results=actual_n,
+            where={"sport": sport}
+        )
+
+        # Return matched documents list (or empty list if none found)
+        return results.get("documents", [[]])[0]
+
+    except Exception as e:
+        print(f"ChromaDB query error: {e}")
+        return []
