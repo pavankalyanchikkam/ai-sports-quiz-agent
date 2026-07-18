@@ -4,19 +4,39 @@
     "fact": "The first official cricket Test match was played in 1877 between Australia and England at the Melbourne Cricket Ground (MCG). Australia won by 45 runs."
   },
   {
+    "sport": "Cricket",
+    "fact": "Cricket legend Don Bradman retired with a Test batting average of 99.94, the highest batting average in the history of Test cricket."
+  },
+  {
     "sport": "Badminton",
     "fact": "The Thomas Cup, established in 1948, is the premier international men's team badminton championship. India won its historic first title in 2022 by defeating Indonesia 3-0."
+  },
+  {
+    "sport": "Badminton",
+    "fact": "Badminton was introduced as an official Olympic sport at the 1992 Barcelona Summer Games. China has historically been the dominant nation in Olympic badminton."
   },
   {
     "sport": "Football",
     "fact": "The FIFA World Cup was first held in 1930. Uruguay hosted and won the tournament, defeating Argentina 4-2 in the final match in Montevideo."
   },
   {
+    "sport": "Football",
+    "fact": "Brazil has won the FIFA World Cup a record five times, in 1958, 1962, 1970, 1994, and 2002, making them the most successful nation in World Cup history."
+  },
+  {
     "sport": "Tennis",
-    "fact": "The Wimbledon Championships, founded in 1877, is the oldest tennis tournament in the world and is played on grass courts."
+    "fact": "Wimbledon is the oldest tennis tournament in the world, founded in 1877. It is one of the four Grand Slam tournaments alongside the US Open, French Open, and Australian Open."
+  },
+  {
+    "sport": "Tennis",
+    "fact": "Roger Federer holds the record for the most Wimbledon men's singles titles, winning the championship eight times. Novak Djokovic and Rafael Nadal have also won more than 20 Grand Slam titles each."
   },
   {
     "sport": "Basketball",
-    "fact": "The National Basketball Association (NBA) was founded in 1946. The Boston Celtics and Los Angeles Lakers are tied for the most championships in league history."
+    "fact": "Basketball was invented by Dr. James Naismith in 1891 in Springfield, Massachusetts. The first official game was played with a soccer ball and two peach baskets as hoops."
+  },
+  {
+    "sport": "Basketball",
+    "fact": "Michael Jordan won six NBA Championships with the Chicago Bulls in 1991, 1992, 1993, 1996, 1997, and 1998, and is widely regarded as the greatest basketball player of all time."
   }
 ]
