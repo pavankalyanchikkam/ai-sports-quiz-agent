@@ -4,12 +4,12 @@ from src.database import query_historic_facts
 from src.search import get_live_news_context
 
 def compile_quiz_data(sport, difficulty):
-    db_query = f"{sport} history cup championships rules records"
+    """Assembles all RAG vectors and text streams to generate the grounded quiz."""
+    db_query = f"{sport} history cup world championships records"
     db_matches = query_historic_facts(sport=sport, query_text=db_query, n_results=2)
-    db_context = "\n".join(db_matches) if db_matches else f"{sport} historical records are well documented."
+    db_context = "\n".join(db_matches)
 
     web_context = get_live_news_context(sport)
-
     unified_context = f"=== HISTORICAL FACTS ===\n{db_context}\n\n=== LIVE INTERNET NEWS ===\n{web_context}"
 
     client = OpenAI(api_key=OPENAI_API_KEY)
@@ -17,8 +17,7 @@ def compile_quiz_data(sport, difficulty):
     system_instruction = (
         "You are an expert sports quiz creator. Your job is to write multiple-choice quizzes "
         "relying strictly on the provided Context. Avoid hallucinations. Do not use facts not "
-        "found in the Context below. If facts are scarce, make do with what you have, "
-        "but keep details completely accurate to the text context.\n\n"
+        "found in the Context below. Keep all details completely accurate to the text context.\n\n"
         f"CONTEXT DETAILS:\n{unified_context}"
     )
 
@@ -42,7 +41,7 @@ def compile_quiz_data(sport, difficulty):
             {"role": "system", "content": system_instruction},
             {"role": "user", "content": user_prompt}
         ],
-        temperature=0.7,
+        temperature=0.6,
     )
 
     return response.choices[0].message.content, unified_context
