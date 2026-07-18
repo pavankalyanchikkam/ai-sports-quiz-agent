@@ -1,31 +1,22 @@
 [
-  { "sport": "Cricket", "fact": "The first official cricket Test match was played in 1877 between Australia and England at the Melbourne Cricket Ground (MCG). Australia won by 45 runs." },
-  { "sport": "Cricket", "fact": "Cricket legend Don Bradman retired with a Test batting average of 99.94, the highest batting average in the history of Test cricket." },
-  { "sport": "Cricket", "fact": "Sachin Tendulkar holds the record for the most international centuries, scoring 100 centuries across Test and ODI formats during his career." },
-  { "sport": "Cricket", "fact": "Muttiah Muralitharan of Sri Lanka is the highest wicket-taker in Test cricket history, concluding his career with exactly 800 wickets." },
-  { "sport": "Cricket", "fact": "The first Men's Cricket World Cup was held in England in 1975, with the West Indies defeating Australia in the final to lift the trophy." },
-
-  { "sport": "Badminton", "fact": "The Thomas Cup, established in 1948, is the premier international men's team badminton championship. India won its historic first title in 2022 by defeating Indonesia 3-0." },
-  { "sport": "Badminton", "fact": "Badminton was introduced as an official Olympic sport at the 1992 Barcelona Summer Games. China has historically been the dominant nation in Olympic badminton." },
-  { "sport": "Badminton", "fact": "Lin Dan of China is considered one of the greatest players ever, being the first to complete the 'Super Grand Slam' by winning all nine major titles." },
-  { "sport": "Badminton", "fact": "The fastest smash hit in competitive badminton was recorded by India's Satwiksairaj Rankireddy in 2023, clocking an incredible 565 km/h (351 mph)." },
-  { "sport": "Badminton", "fact": "The Uber Cup is the women's equivalent of the Thomas Cup, first held in 1956-1957. China holds the record for the most Uber Cup titles." },
-
-  { "sport": "Football", "fact": "The FIFA World Cup was first held in 1930. Uruguay hosted and won the tournament, defeating Argentina 4-2 in the final match in Montevideo." },
-  { "sport": "Football", "fact": "Brazil has won the FIFA World Cup a record five times (1958, 1962, 1970, 1994, 2002), making them the most successful nation in World Cup history." },
-  { "sport": "Football", "fact": "Pelé is the only football player in history to win three FIFA World Cups, achieving the feat with Brazil in 1958, 1962, and 1970." },
-  { "sport": "Football", "fact": "Lionel Messi holds the record for winning the most Ballon d'Or awards, given to the best player in the world, securing the honor eight times." },
-  { "sport": "Football", "fact": "Real Madrid is the most successful club in UEFA Champions League history, having won the prestigious European trophy more than 14 times." },
-
-  { "sport": "Tennis", "fact": "Wimbledon is the oldest tennis tournament in the world, founded in 1877. It is the only Grand Slam still played on traditional grass courts." },
-  { "sport": "Tennis", "fact": "Margaret Court holds the all-time record for the most Grand Slam women's singles titles, having won 24 major championships during her career." },
-  { "sport": "Tennis", "fact": "The longest tennis match in history occurred at Wimbledon in 2010, where John Isner defeated Nicolas Mahut after 11 hours and 5 minutes of play." },
-  { "sport": "Tennis", "fact": "In 1988, Steffi Graf achieved the Golden Slam by winning all four Grand Slam titles and the Olympic gold medal in a single calendar year." },
-  { "sport": "Tennis", "fact": "Rafael Nadal is known as the 'King of Clay' due to his unprecedented dominance at the French Open, winning the tournament a record 14 times." },
-
-  { "sport": "Basketball", "fact": "Basketball was invented by Dr. James Naismith in 1891 in Springfield, Massachusetts. The first game was played with a soccer ball and peach baskets." },
-  { "sport": "Basketball", "fact": "Michael Jordan won six NBA Championships with the Chicago Bulls in the 1990s and was named the NBA Finals MVP in all six of those series." },
-  { "sport": "Basketball", "fact": "Wilt Chamberlain holds the record for the most points scored in a single NBA game, dropping exactly 100 points for the Philadelphia Warriors in 1962." },
-  { "sport": "Basketball", "fact": "In 2023, LeBron James officially surpassed Kareem Abdul-Jabbar to become the all-time leading scorer in NBA regular-season history." },
-  { "sport": "Basketball", "fact": "The International Basketball Federation (FIBA) was founded in Geneva in 1932 to govern international competition, initially focusing on amateur players." }
+  {
+    "sport": "Cricket",
+    "fact": "The first official cricket Test match was played in 1877 between Australia and England at the Melbourne Cricket Ground (MCG). Australia won by 45 runs."
+  },
+  {
+    "sport": "Badminton",
+    "fact": "The Thomas Cup, established in 1948, is the premier international men's team badminton championship. India won its historic first title in 2022 by defeating Indonesia 3-0."
+  },
+  {
+    "sport": "Football",
+    "fact": "The FIFA World Cup was first held in 1930. Uruguay hosted and won the tournament, defeating Argentina 4-2 in the final match in Montevideo."
+  },
+  {
+    "sport": "Tennis",
+    "fact": "The Wimbledon Championships, founded in 1877, is the oldest tennis tournament in the world and is played on grass courts."
+  },
+  {
+    "sport": "Basketball",
+    "fact": "The National Basketball Association (NBA) was founded in 1946. The Boston Celtics and Los Angeles Lakers are tied for the most championships in league history."
+  }
 ]
