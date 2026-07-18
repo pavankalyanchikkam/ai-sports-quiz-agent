@@ -1,31 +1,11 @@
-from duckduckgo_search import DDGS
+import os
+from dotenv import load_dotenv
 
-def get_live_news_context(sport_name):
-    """
-    Searches the live web for recent sport news, matches, or events.
-    Returns a unified text summary of search snippets.
-    """
-    search_query = f"{sport_name} latest tournament results championship winners news 2026"
-    retrieved_texts = []
+# Load variables from .env file
+load_dotenv()
 
-    print(f"Executing web search for: '{search_query}'...")
-    try:
-        # Initializing DuckDuckGo search context
-        with DDGS() as ddgs:
-            # We fetch the top 3 text search results
-            results = list(ddgs.text(search_query, max_results=3))
+# Centralized configurations
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-            if not results:
-                # Retry with a simpler query if first attempt returns nothing
-                results = list(ddgs.text(f"{sport_name} sports news", max_results=3))
-
-            for index, r in enumerate(results, start=1):
-                title = r.get("title", "No Title")
-                snippet = r.get("body", "No Snippet Content Available")
-                retrieved_texts.append(f"Web Source {index}: {title}\nSnippet: {snippet}")
-
-    except Exception as e:
-        print(f"Web Search fell back or failed: {e}")
-        return "No recent search engine updates available due to system connectivity."
-
-    return "\n\n".join(retrieved_texts)
+if not OPENAI_API_KEY:
+    print("[WARNING]: API Key is missing. Check your .env file setup!")
