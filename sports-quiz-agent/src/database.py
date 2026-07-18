@@ -4,11 +4,9 @@ import chromadb
 from chromadb.utils import embedding_functions
 
 def get_chroma_client():
-    """Initializes and returns a persistent ChromaDB client saving to disk."""
     return chromadb.PersistentClient(path="./chroma_db")
 
 def resolve_data_path():
-    """Determines the absolute system path to the static JSON dataset."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     alternative_path = os.path.abspath(os.path.join(base_dir, "..", "data", "sports_facts.json"))
     if os.path.exists(alternative_path):
@@ -16,22 +14,20 @@ def resolve_data_path():
     return "./data/sports_facts.json"
 
 def setup_and_populate_db():
-    """Reads the static JSON file and upserts elements to a fresh vector collection."""
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
 
-    # Transitioning to a clean production collection namespace
+    # V6 guarantees it reads the newly expanded 25-fact JSON file
     collection = client.get_or_create_collection(
-        name="sports_production_knowledge_v5",
+        name="sports_production_knowledge_v6",
         embedding_function=embedding_fn
     )
 
-    if collection.count() >= 10:
+    if collection.count() >= 25:
         return collection
 
     json_file_path = resolve_data_path()
     if not os.path.exists(json_file_path):
-        print(f"[ERROR]: Database initialization source file not found at {json_file_path}")
         return collection
 
     try:
@@ -45,24 +41,19 @@ def setup_and_populate_db():
             metadata_list.append({"sport": item["sport"]})
             ids.append(f"{item['sport'].lower()}_fact_{idx}")
 
-        collection.upsert(
-            documents=documents,
-            metadatas=metadata_list,
-            ids=ids
-        )
-        print(f"Successfully populated database collection with {len(documents)} elements.")
+        collection.upsert(documents=documents, metadatas=metadata_list, ids=ids)
     except Exception as e:
-        print(f"Error handling database insertion routine: {e}")
+        print(f"Database insertion error: {e}")
 
     return collection
 
-def query_historic_facts(sport, query_text, n_results=2):
-    """Queries ChromaDB using explicit metadata structural filters."""
+# WE NOW PULL 5 RESULTS SO THE LLM NEVER RUNS OUT OF MATERIAL
+def query_historic_facts(sport, query_text, n_results=5):
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
     
     collection = client.get_or_create_collection(
-        name="sports_production_knowledge_v5",
+        name="sports_production_knowledge_v6",
         embedding_function=embedding_fn
     )
 
@@ -73,7 +64,7 @@ def query_historic_facts(sport, query_text, n_results=2):
         sport_docs = collection.get(where={"sport": sport})
         
         if not sport_docs or not sport_docs.get("ids") or len(sport_docs["ids"]) == 0:
-            return [f"Historical records indicate that {sport} possesses a profound international competitive legacy."]
+            return [f"Historical records indicate that {sport} has a rich competitive legacy."]
 
         available_count = len(sport_docs["ids"])
         actual_n = min(n_results, available_count)
@@ -90,5 +81,5 @@ def query_historic_facts(sport, query_text, n_results=2):
         return sport_docs.get("documents", [])[:actual_n]
 
     except Exception as e:
-        print(f"ChromaDB retrieval layer error encountered: {e}")
-        return [f"The legacy of {sport} is highlighted by prestigious tournament milestones and history."]
+        print(f"ChromaDB retrieval error: {e}")
+        return [f"The legacy of {sport} is highlighted by prestigious history."]
