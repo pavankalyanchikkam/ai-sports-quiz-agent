@@ -14,7 +14,6 @@ def compile_quiz_data(sport, difficulty):
 
     client = OpenAI(api_key=OPENAI_API_KEY)
 
-    # Added strict difficulty calibration to the system instruction
     system_instruction = (
         "You are an expert sports quiz creator. Your job is to write multiple-choice quizzes "
         "relying strictly on the provided Context. Avoid hallucinations. Do not use facts not "
@@ -24,10 +23,13 @@ def compile_quiz_data(sport, difficulty):
         "For Hard difficulty, questions must require specific knowledge such as exact years, scores, "
         "player statistics, record holders, or lesser-known historical facts. Avoid general knowledge "
         "that casual fans would know (e.g., 'which country is best at X').\n\n"
+        "STRICT CONTEXT USAGE RULE:\n"
+        "Use web search results ONLY as background context to ensure freshness. Never create a "
+        "question that asks what an article reports, what updates highlight, or what a website says. "
+        "All 5 questions must test specific sports facts: dates, scores, records, player names, or rules.\n\n"
         f"CONTEXT DETAILS:\n{unified_context}"
     )
 
-    # Changed from 4 to 5 unique multiple-choice questions
     user_prompt = (
         f"Generate exactly 5 unique multiple-choice questions for the sport: {sport}.\n"
         f"Difficulty target: {difficulty}.\n\n"
