@@ -1,80 +1,60 @@
-import os
-import json
-import chromadb
-from chromadb.utils import embedding_functions
+from openai import OpenAI
+from src.config import OPENAI_API_KEY
+from src.database import query_historic_facts
+from src.search import get_live_news_context
 
-def get_chroma_client():
-    """Initializes and returns a persistent ChromaDB client saving to disk."""
-    return chromadb.PersistentClient(path="./chroma_db")
-
-def setup_and_populate_db(json_file_path="./data/sports_facts.json"):
+def compile_quiz_data(sport, difficulty):
     """
-    Reads the offline JSON facts, creates a collection, and populates it.
-    This only needs to be run once, or when your local data changes.
+    1. Gathers context from ChromaDB (Historical).
+    2. Gathers context from DuckDuckGo (Live news).
+    3. Blends them inside a grounded prompt.
+    4. Connects to OpenAI and generates the structured quiz.
     """
-    client = get_chroma_client()
+    # Create query to run against ChromaDB
+    db_query = f"{sport} history cup championships rules records"
+    db_matches = query_historic_facts(sport=sport, query_text=db_query, n_results=2)
+    db_context = "\n".join(db_matches) if db_matches else "No offline historic data recorded."
 
-    # Using ChromaDB's default embedding function (sentence-transformers)
-    # Alternatively, you can use OpenAI's embedding API
-    embedding_fn = embedding_functions.DefaultEmbeddingFunction()
+    # Search the live web
+    web_context = get_live_news_context(sport)
 
-    # Get or create collection
-    collection = client.get_or_create_collection(
-        name="sports_history",
-        embedding_function=embedding_fn
+    # Combine historical and web contexts
+    unified_context = f"=== HISTORICAL FACTS ===\n{db_context}\n\n=== LIVE INTERNET NEWS ===\n{web_context}"
+
+    # Instantiate the API client
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    # Constructing a structured system prompt
+    system_instruction = (
+        "You are an expert sports quiz creator. Your job is to write multiple-choice quizzes "
+        "relying strictly on the provided Context. Avoid hallucinations. Do not use facts not "
+        "found in the Context below. If facts are scarce, make do with what you have, "
+        "but keep details completely accurate to the text context.\n\n"
+        f"CONTEXT DETAILS:\n{unified_context}"
     )
 
-    # Check if the database has already been populated
-    if collection.count() > 0:
-        print(f"Database already populated with {collection.count()} facts.")
-        return collection
-
-    # Check if data file exists
-    if not os.path.exists(json_file_path):
-        print(f"Error: Raw fact data file not found at {json_file_path}")
-        return collection
-
-    # Load and parse facts
-    with open(json_file_path, "r") as f:
-        facts_list = json.load(f)
-
-    documents = []
-    metadata_list = []
-    ids = []
-
-    for idx, item in enumerate(facts_list):
-        documents.append(item["fact"])
-        # Storing metadata allows us to filter queries by sport later!
-        metadata_list.append({"sport": item["sport"]})
-        ids.append(f"fact_{idx}")
-
-    # Bulk add vectors to collection
-    collection.add(
-        documents=documents,
-        metadatas=metadata_list,
-        ids=ids
-    )
-    print(f"Successfully vectorized and stored {len(documents)} facts.")
-    return collection
-
-def query_historic_facts(sport, query_text, n_results=2):
-    """
-    Queries ChromaDB for historic documents relating to a sport.
-    Filters database elements to match the selected sport category.
-    """
-    client = get_chroma_client()
-    embedding_fn = embedding_functions.DefaultEmbeddingFunction()
-    collection = client.get_or_create_collection(
-        name="sports_history",
-        embedding_function=embedding_fn
+    user_prompt = (
+        f"Generate exactly 3 unique multiple-choice questions for the sport: {sport}.\n"
+        f"Difficulty target: {difficulty}.\n\n"
+        "Format each question exactly as follows so my program can parse it:\n"
+        "Question: [Question text here]\n"
+        "A) [Option A]\n"
+        "B) [Option B]\n"
+        "C) [Option C]\n"
+        "D) [Option D]\n"
+        "Correct Answer: [Single Letter, e.g., A]\n"
+        "Explanation: [Detailed background reasoning quoting from the context details]\n"
+        "---"
     )
 
-    # Query with metadata filtering so we only get facts for our target sport
-    results = collection.query(
-        query_texts=[query_text],
-        n_results=n_results,
-        where={"sport": sport}
+    # Make API call
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo", # Or "gpt-4o"
+        messages=[
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.7,
     )
 
-    # Return matched documents list (or empty list if none found)
-    return results.get("documents", [[]])[0]
+    return response.choices[0].message.content, unified_context
