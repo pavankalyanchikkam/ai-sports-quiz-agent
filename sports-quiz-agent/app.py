@@ -17,7 +17,7 @@ st.write("Challenge yourself or generate engaging social media content! Powered 
 
 # 3. Sidebar inputs
 st.sidebar.header("Quiz Settings")
-sport_choice = st.sidebar.selectbox("Select Sport", ["Cricket", "Football", "Badminton"])
+sport_choice = st.sidebar.selectbox("Select Sport", ["Cricket", "Football", "Badminton", "Tennis", "Basketball"])
 difficulty = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
 
 # 4. Initialize session state to remember quizzes across page interactions
@@ -39,21 +39,21 @@ if st.sidebar.button("Generate Fresh Quiz", use_container_width=True):
 # 5. Display the generated quiz
 if st.session_state.quiz_output:
     st.subheader(f"Current Quiz: {sport_choice} ({difficulty})")
-    
+
     st.text_area("Generated Quiz Output (Copy paste to your socials)",
                  value=st.session_state.quiz_output,
                  height=350)
-    
+
     st.divider()
     st.markdown("### Interactive Quiz Mode")
-    
+
     raw_questions = [q.strip() for q in st.session_state.quiz_output.split("---") if q.strip()]
     for idx, q_block in enumerate(raw_questions):
         if "Correct Answer:" in q_block:
             parts = q_block.split("Correct Answer:")
             question_and_options = parts[0].strip().rstrip("*").strip()
             raw_answer_segment = parts[1].strip().lstrip("*").strip().lstrip(":").strip()
-            
+
             if "Explanation:" in raw_answer_segment:
                 exp_parts = raw_answer_segment.split("Explanation:")
                 correct_letter = exp_parts[0].strip().replace("**", "").replace(":", "").strip()
@@ -62,15 +62,15 @@ if st.session_state.quiz_output:
             else:
                 clean_letter = raw_answer_segment.replace("**", "").replace(":", "").strip()
                 final_dropdown_text = f"🎯 **Correct Answer:** {clean_letter}"
-            
+
             with st.container(border=True):
                 st.markdown(question_and_options)
                 with st.expander(f"💡 Reveal Answer & Explanation for Question {idx + 1}"):
-                    st.info(final_dropdown_text) 
+                    st.info(final_dropdown_text)
         else:
             with st.container(border=True):
                 st.markdown(q_block)
-    
+
     st.divider()
     # Expandable window showcasing the "ground truth context" for audit purposes
     with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
