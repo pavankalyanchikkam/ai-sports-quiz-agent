@@ -17,9 +17,9 @@ def setup_and_populate_db():
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
 
-    # V6 guarantees it reads the newly expanded 25-fact JSON file
+    # Incremented namespace to v9 fully isolates indices from legacy corrupted runs
     collection = client.get_or_create_collection(
-        name="sports_production_knowledge_v6",
+        name="sports_evaluation_collection_v9",
         embedding_function=embedding_fn
     )
 
@@ -28,6 +28,7 @@ def setup_and_populate_db():
 
     json_file_path = resolve_data_path()
     if not os.path.exists(json_file_path):
+        print(f"Error: Raw data source missing at {json_file_path}")
         return collection
 
     try:
@@ -42,18 +43,18 @@ def setup_and_populate_db():
             ids.append(f"{item['sport'].lower()}_fact_{idx}")
 
         collection.upsert(documents=documents, metadatas=metadata_list, ids=ids)
+        print(f"Collection populated successfully with {len(documents)} entries.")
     except Exception as e:
-        print(f"Database insertion error: {e}")
+        print(f"Database insertion error encountered: {e}")
 
     return collection
 
-# WE NOW PULL 5 RESULTS SO THE LLM NEVER RUNS OUT OF MATERIAL
 def query_historic_facts(sport, query_text, n_results=5):
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
     
     collection = client.get_or_create_collection(
-        name="sports_production_knowledge_v6",
+        name="sports_evaluation_collection_v9",
         embedding_function=embedding_fn
     )
 
@@ -64,7 +65,7 @@ def query_historic_facts(sport, query_text, n_results=5):
         sport_docs = collection.get(where={"sport": sport})
         
         if not sport_docs or not sport_docs.get("ids") or len(sport_docs["ids"]) == 0:
-            return [f"Historical records indicate that {sport} has a rich competitive legacy."]
+            return [f"Historical records indicate that {sport} has a significant competitive history."]
 
         available_count = len(sport_docs["ids"])
         actual_n = min(n_results, available_count)
@@ -81,5 +82,5 @@ def query_historic_facts(sport, query_text, n_results=5):
         return sport_docs.get("documents", [])[:actual_n]
 
     except Exception as e:
-        print(f"ChromaDB retrieval error: {e}")
-        return [f"The legacy of {sport} is highlighted by prestigious history."]
+        print(f"ChromaDB query operation failed: {e}")
+        return [f"The legacy of {sport} is anchored by international athletic milestones."]
