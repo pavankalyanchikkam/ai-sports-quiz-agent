@@ -1,87 +1,77 @@
 import streamlit as st
-import os
-from dotenv import load_dotenv
-from utils.database import seed_database
-from utils.rag_engine import generate_sports_quiz
+from src.generator import compile_quiz_data
+from src.database import setup_and_populate_db
 
-load_dotenv()
-
+# 1. Warm-up and initialize the vector DB with our offline facts on startup
 @st.cache_resource
-def initialize_app():
-    seed_database()
-    return True
+def prepare_knowledge_base():
+    setup_and_populate_db()
 
-initialize_app()
+prepare_knowledge_base()
 
-# --- STEP 1: FORCE WIDE LAYOUT TO INCREASE WIDTH & REDUCE SCROLLING ---
-st.set_page_config(page_title="AI Sports Quiz Agent", page_icon="🏆", layout="wide")
+# 2. Set Page configurations
+st.set_page_config(page_title="Sports Quiz Agent", page_icon="🏆", layout="centered")
 
-st.title("🏆 AI-Powered Sports Quiz Agent")
-st.markdown("""
-Welcome! This agent uses **RAG (Retrieval-Augmented Generation)** to create fact-checked sports quizzes. 
-It pulls context from a local **ChromaDB** and live **web searches** before generating questions via Gemini.
-""")
+st.title("🏆 AI-Powered Sports Quiz Generator")
+st.write("Challenge yourself or generate engaging social media content! Powered by RAG (ChromaDB + Web Search).")
 
-st.divider()
-
-# --- STEP 2: SIDEBAR SETTINGS ---
+# 3. Sidebar inputs
 st.sidebar.header("Quiz Settings")
-sport_input = st.sidebar.text_input("Enter a Sport:", placeholder="e.g., Cricket")
-difficulty_level = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
+sport_choice = st.sidebar.selectbox("Select Sport", ["Cricket", "Football", "Badminton"])
+difficulty = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
 
-if st.sidebar.button("Generate Quiz 🚀", use_container_width=True):
+# 4. Initialize session state to remember quizzes across page interactions
+if "quiz_output" not in st.session_state:
+    st.session_state.quiz_output = None
+    st.session_state.quiz_context = None
+
+# Button to trigger compilation pipeline
+if st.sidebar.button("Generate Fresh Quiz", use_container_width=True):
+    with st.spinner("Fetching historical facts & scouring the live web..."):
+        try:
+            quiz_text, context_used = compile_quiz_data(sport_choice, difficulty)
+            st.session_state.quiz_output = quiz_text
+            st.session_state.quiz_context = context_used
+            st.success("Quiz created successfully!")
+        except Exception as e:
+            st.error(f"Failed to generate quiz: {e}")
+
+# 5. Display the generated quiz
+if st.session_state.quiz_output:
+    st.subheader(f"Current Quiz: {sport_choice} ({difficulty})")
     
-    if not sport_input.strip():
-        st.sidebar.warning("Please enter a sport to generate the quiz.")
-    else:
-        with st.spinner(f"Agent is scanning databases and the web for {sport_input} facts..."):
-            try:
-                quiz_output, context_used = generate_sports_quiz(sport_input, difficulty_level)
-                
-                st.success("Quiz Generated Successfully!")
-                st.markdown("### Your Custom Quiz")
-                
-                # --- STEP 3: FACTOR-PROOFED INTERACTIVE QUESTION CARD PARSING ---
-                raw_questions = [q.strip() for q in quiz_output.split("---") if q.strip()]
-                
-                for idx, q_block in enumerate(raw_questions):
-                    if "Correct Answer:" in q_block:
-                        # Split by the main label text
-                        parts = q_block.split("Correct Answer:")
-                        
-                        # Clean up the question text and strip any left-over markdown bold stars
-                        question_and_options = parts[0].strip().rstrip("*").strip()
-                        
-                        # Isolate the remaining answer and explanation segment
-                        raw_answer_segment = parts[1].strip().lstrip("*").strip().lstrip(":").strip()
-                        
-                        # Sub-split the explanation out to build a pristine layout inside the card
-                        if "Explanation:" in raw_answer_segment:
-                            exp_parts = raw_answer_segment.split("Explanation:")
-                            correct_letter = exp_parts[0].strip().replace("**", "").replace(":", "").strip()
-                            explanation_content = exp_parts[1].strip().replace("**", "").replace(":", "").strip()
-                            
-                            final_dropdown_text = f"🎯 **Correct Answer:** {correct_letter}\n\n📝 **Explanation:** {explanation_content}"
-                        else:
-                            clean_letter = raw_answer_segment.replace("**", "").replace(":", "").strip()
-                            final_dropdown_text = f"🎯 **Correct Answer:** {clean_letter}"
-                        
-                        # Render cleanly into the interface container
-                        with st.container(border=True):
-                            st.markdown(question_and_options)
-                            
-                            with st.expander(f"💡 Reveal Answer & Explanation for Question {idx + 1}"):
-                                st.markdown(final_dropdown_text)
-                    else:
-                        # Safe fallback layout block
-                        with st.container(border=True):
-                            st.markdown(q_block)
-                
-                st.divider()
-                
-                # --- STEP 4: GROUND TRUTH AUDIT EXPANDER ---
-                with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
-                    st.code(context_used, language="markdown")
-                
-            except Exception as e:
-                st.error(f"An error occurred during generation: {e}")
+    st.text_area("Generated Quiz Output (Copy paste to your socials)",
+                 value=st.session_state.quiz_output,
+                 height=350)
+    
+    st.divider()
+    st.markdown("### Interactive Quiz Mode")
+    
+    raw_questions = [q.strip() for q in st.session_state.quiz_output.split("---") if q.strip()]
+    for idx, q_block in enumerate(raw_questions):
+        if "Correct Answer:" in q_block:
+            parts = q_block.split("Correct Answer:")
+            question_and_options = parts[0].strip().rstrip("*").strip()
+            raw_answer_segment = parts[1].strip().lstrip("*").strip().lstrip(":").strip()
+            
+            if "Explanation:" in raw_answer_segment:
+                exp_parts = raw_answer_segment.split("Explanation:")
+                correct_letter = exp_parts[0].strip().replace("**", "").replace(":", "").strip()
+                explanation_content = exp_parts[1].strip().replace("**", "").replace(":", "").strip()
+                final_dropdown_text = f"🎯 **Correct Answer:** {correct_letter}\n\n📝 **Explanation:** {explanation_content}"
+            else:
+                clean_letter = raw_answer_segment.replace("**", "").replace(":", "").strip()
+                final_dropdown_text = f"🎯 **Correct Answer:** {clean_letter}"
+            
+            with st.container(border=True):
+                st.markdown(question_and_options)
+                with st.expander(f"💡 Reveal Answer & Explanation for Question {idx + 1}"):
+                    st.info(final_dropdown_text) 
+        else:
+            with st.container(border=True):
+                st.markdown(q_block)
+    
+    st.divider()
+    # Expandable window showcasing the "ground truth context" for audit purposes
+    with st.expander("🔍 Inspect Ground Truth (RAG Context Used)"):
+        st.code(st.session_state.quiz_context, language="markdown")
