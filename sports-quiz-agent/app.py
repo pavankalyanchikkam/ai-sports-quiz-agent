@@ -39,8 +39,11 @@ if st.sidebar.button("Generate Fresh Quiz", use_container_width=True):
 if st.session_state.quiz_output:
     st.subheader(f"Current Quiz: {sport_choice} ({difficulty})")
 
+    # PREPEND SPORT AND DIFFICULTY TO MATCH THE EXAMPLE OUTPUT EXACTLY
+    full_social_output = f"Sport: {sport_choice}\nDifficulty: {difficulty}\n\n" + st.session_state.quiz_output
+
     st.text_area("Generated Quiz Output (Copy paste to your socials)",
-                 value=st.session_state.quiz_output,
+                 value=full_social_output,
                  height=320)
 
     st.divider()
