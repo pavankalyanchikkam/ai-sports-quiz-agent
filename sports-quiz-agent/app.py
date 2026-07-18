@@ -2,21 +2,25 @@ import streamlit as st
 from src.generator import compile_quiz_data
 from src.database import setup_and_populate_db
 
+# 1. Warm up vector base instances on initial startup execution
 @st.cache_resource
 def prepare_knowledge_base():
     setup_and_populate_db()
 
 prepare_knowledge_base()
 
+# 2. Page Configuration Layout Setup
 st.set_page_config(page_title="AI Sports Quiz Agent", page_icon="🏆", layout="centered")
 
 st.title("🏆 AI-Powered Sports Quiz Generator")
 st.write("Generate fact-checked multiple-choice quizzes for social media using RAG (ChromaDB + Web Search).")
 
+# 3. Structural Configurations Input Sliders
 st.sidebar.header("Quiz Configurations")
 sport_choice = st.sidebar.selectbox("Select Sport", ["Cricket", "Football", "Tennis", "Badminton", "Basketball"])
 difficulty = st.sidebar.select_slider("Select Difficulty", options=["Easy", "Medium", "Hard"])
 
+# 4. Global State Tracking Instantiations
 if "quiz_output" not in st.session_state:
     st.session_state.quiz_output = None
     st.session_state.quiz_context = None
@@ -31,10 +35,11 @@ if st.sidebar.button("Generate Fresh Quiz", use_container_width=True):
         except Exception as e:
             st.error(f"Failed to compile quiz pipeline: {e}")
 
+# 5. Core Interface Presentational Loop Blocks
 if st.session_state.quiz_output:
     st.subheader(f"Current Quiz: {sport_choice} ({difficulty})")
 
-    # PREPEND SPORT AND DIFFICULTY TO MATCH RUBRIC EXAMPLE
+    # Construct explicit matching output signature prefix
     full_social_output = f"Sport: {sport_choice}\nDifficulty: {difficulty}\n\n" + st.session_state.quiz_output
 
     st.text_area("Generated Quiz Output (Copy paste to your socials)",
