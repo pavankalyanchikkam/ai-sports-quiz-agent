@@ -20,7 +20,7 @@ def setup_and_populate_db(json_file_path="./data/sports_facts.json"):
 
     # Get or create collection
     collection = client.get_or_create_collection(
-        name="sports_history",
+        name="sports_history_v2",
         embedding_function=embedding_fn
     )
 
@@ -65,7 +65,7 @@ def query_historic_facts(sport, query_text, n_results=2):
     client = get_chroma_client()
     embedding_fn = embedding_functions.DefaultEmbeddingFunction()
     collection = client.get_or_create_collection(
-        name="sports_history",
+        name="sports_history_v2",
         embedding_function=embedding_fn
     )
 
