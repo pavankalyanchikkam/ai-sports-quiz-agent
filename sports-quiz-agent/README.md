@@ -1,14 +1,13 @@
 # AI-Powered Sports Quiz Generation Agent
 
-An interactive Streamlit application utilizing Retrieval-Augmented Generation (RAG) with ChromaDB and real-time web search to construct fact-checked multiple-choice quizzes.
+An interactive Streamlit dashboard designed to automatically create fact-checked multiple-choice sports quizzes for social media engagement using Retrieval-Augmented Generation (RAG).
 
-## Architecture Highlights
-- **Vector Space (ChromaDB)**: Extracts historical records using explicit sport-specific metadata indexing.
-- **Freshness Layer (DuckDuckGo)**: Fetches real-time web context with a strict silent empty fallback to prevent hallucinated meta-questions.
-- **Orchestration Brain (OpenAI)**: Generates exactly 4-5 structured multiple-choice questions cleanly grounded in verified context.
+## Core Architecture
+- **Vector Core (ChromaDB)**: Extracts historical records using strict sport-specific metadata indexing.
+- **Web Intelligence (DuckDuckGo)**: Scours live online updates with dynamic fallback routines to bypass query limits.
+- **Orchestration Brain (OpenAI GPT)**: Generates 4-5 structured multiple-choice questions cleanly grounded in the unified context payload.
 
-## Setup Instructions
-1. Install dependencies: `pip install -r requirements.txt`
-2. Configure your OpenAI API key inside a root-level `.env` file.
-3. Clean any existing local cache completely: `rm -rf chroma_db/`
-4. Run the web dashboard application: `streamlit run app.py`
+## Installation & Deployment
+1. Set up dependencies: `pip install -r requirements.txt`
+2. Add your credentials to a root-level `.env` file.
+3. Boot up the user interface: `streamlit run app.py`
