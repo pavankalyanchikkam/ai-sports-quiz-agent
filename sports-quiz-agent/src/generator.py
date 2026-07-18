@@ -14,29 +14,23 @@ def compile_quiz_data(sport, difficulty):
 
     client = OpenAI(api_key=OPENAI_API_KEY)
 
-    # FIX 1: Strict constraints forbidding questions about web sources or search engines
+    # Added strict difficulty calibration to the system instruction
     system_instruction = (
         "You are an expert sports quiz creator. Your job is to write multiple-choice quizzes "
         "relying strictly on the provided Context. Avoid hallucinations. Do not use facts not "
         "found in the Context below. Keep all details completely accurate to the text context.\n\n"
-        "CRITICAL CONSTRAINTS:\n"
-        "1. Only generate questions about real-world sports facts, tournament records, history, rules, or athletes.\n"
-        "2. NEVER generate a question about where to find scores, which website covers a sport, or mention the text source itself (e.g., do NOT ask questions about 'Web Source 1' or 'ESPN'). The quiz must feel like a genuine sports trivia contest, not an assessment of the provided text snippets.\n"
-        "3. Ensure the explanation validates the sports fact itself without mentioning phrases like 'According to Web Source 1'.\n\n"
+        "CRITICAL DIFFICULTY INSTRUCTION:\n"
+        "Adjust the complexity of the questions strictly based on the requested difficulty level. "
+        "For Hard difficulty, questions must require specific knowledge such as exact years, scores, "
+        "player statistics, record holders, or lesser-known historical facts. Avoid general knowledge "
+        "that casual fans would know (e.g., 'which country is best at X').\n\n"
         f"CONTEXT DETAILS:\n{unified_context}"
     )
 
-    # FIX 2: Explicit difficulty enforcement guidelines for the LLM
-    difficulty_guidelines = (
-        "- Easy: basic rules, player counts, well-known grand champions.\n"
-        "- Medium: famous tournaments, milestone records, key years.\n"
-        "- Hard: highly specific statistics, lesser-known historical deep-dives, exact dates, and match scores."
-    )
-
+    # Changed from 4 to 5 unique multiple-choice questions
     user_prompt = (
-        f"Generate exactly 4 unique multiple-choice questions for the sport: {sport}.\n"
+        f"Generate exactly 5 unique multiple-choice questions for the sport: {sport}.\n"
         f"Difficulty target: {difficulty}.\n\n"
-        f"Adhere strictly to these difficulty guidelines:\n{difficulty_guidelines}\n\n"
         "Format each question exactly as follows so my program can parse it:\n"
         "Question: [Question text here]\n"
         "A) [Option A]\n"
