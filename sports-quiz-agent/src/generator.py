@@ -1,36 +1,48 @@
-from duckduckgo_search import DDGS
+from openai import OpenAI
+from src.config import OPENAI_API_KEY
+from src.database import query_historic_facts
+from src.search import get_live_news_context
 
-def get_live_news_context(sport_name):
-    """
-    Searches the live web for recent sport news, matches, or events.
-    Includes strict fallbacks to bypass rate limits.
-    """
-    primary_query = f"{sport_name} latest tournament results championship news 2026"
-    fallback_query = f"{sport_name} sports news updates"
-    retrieved_texts = []
+def compile_quiz_data(sport, difficulty):
+    db_query = f"{sport} history cup championships rules records"
+    db_matches = query_historic_facts(sport=sport, query_text=db_query, n_results=2)
+    db_context = "\n".join(db_matches) if db_matches else f"{sport} historical records are well documented."
 
-    print(f"Executing web search for: '{primary_query}'...")
-    try:
-        with DDGS() as ddgs:
-            # Tier 1: Attempt highly specific query
-            results = list(ddgs.text(primary_query, max_results=3))
-            
-            # Tier 2: Attempt broad query if specific query yields nothing
-            if not results:
-                print("Primary search returned empty. Trying fallback query...")
-                results = list(ddgs.text(fallback_query, max_results=3))
-            
-            for index, r in enumerate(results, start=1):
-                title = r.get("title", "No Title")
-                snippet = r.get("body", "No Snippet Content Available")
-                retrieved_texts.append(f"Web Source {index}: {title}\nSnippet: {snippet}")
+    web_context = get_live_news_context(sport)
 
-    except Exception as e:
-        print(f"Web Search fell back or failed: {e}")
-        return "No live news retrieved due to temporary search engine rate limits. Generating based on historical facts only."
+    unified_context = f"=== HISTORICAL FACTS ===\n{db_context}\n\n=== LIVE INTERNET NEWS ===\n{web_context}"
 
-    # Tier 3: Handle completely empty returns safely
-    if not retrieved_texts:
-        return "No recent search updates found for the specified sport."
-        
-    return "\n\n".join(retrieved_texts)
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+    system_instruction = (
+        "You are an expert sports quiz creator. Your job is to write multiple-choice quizzes "
+        "relying strictly on the provided Context. Avoid hallucinations. Do not use facts not "
+        "found in the Context below. If facts are scarce, make do with what you have, "
+        "but keep details completely accurate to the text context.\n\n"
+        f"CONTEXT DETAILS:\n{unified_context}"
+    )
+
+    user_prompt = (
+        f"Generate exactly 4 unique multiple-choice questions for the sport: {sport}.\n"
+        f"Difficulty target: {difficulty}.\n\n"
+        "Format each question exactly as follows so my program can parse it:\n"
+        "Question: [Question text here]\n"
+        "A) [Option A]\n"
+        "B) [Option B]\n"
+        "C) [Option C]\n"
+        "D) [Option D]\n"
+        "Correct Answer: [Single Letter, e.g., A]\n"
+        "Explanation: [Detailed background reasoning quoting from the context details]\n"
+        "---"
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo", 
+        messages=[
+            {"role": "system", "content": system_instruction},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.7,
+    )
+
+    return response.choices[0].message.content, unified_context
