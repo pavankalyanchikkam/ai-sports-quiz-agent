@@ -3,10 +3,9 @@ from duckduckgo_search import DDGS
 def get_live_news_context(sport_name):
     """
     Searches the live web for recent sport news.
-    FAILSAFE: Returns an absolute empty string primitive if search fails or returns empty.
-    This guarantees that zero filler text is passed into the prompt context.
+    Failsafe: Returns a completely empty string if blocked or empty to prevent filler text questions.
     """
-    primary_query = f"{sport_name} tournament championship match results news"
+    primary_query = f"{sport_name} tournament championship match results news 2026"
     fallback_query = f"{sport_name} international competitive sports news updates"
     retrieved_texts = []
 
@@ -16,7 +15,7 @@ def get_live_news_context(sport_name):
             results = list(ddgs.text(primary_query, max_results=3))
             
             if not results:
-                print("Primary online query returned empty. Deploying secondary parameters...")
+                print("Primary online query returned empty. Deploying secondary fallback parameters...")
                 results = list(ddgs.text(fallback_query, max_results=3))
             
             for index, r in enumerate(results, start=1):
@@ -26,10 +25,10 @@ def get_live_news_context(sport_name):
                     retrieved_texts.append(f"Web Source {index}: {title}\nSnippet: {snippet}")
 
     except Exception as e:
-        print(f"Web search connection blocked or rate-limited: {e}")
+        print(f"Web search connection interrupted or rate-limited: {e}")
         return ""
 
-    # CRITICAL INSTRUCTION: Return explicit empty string to avoid any prompt-filler meta-questions
+    # CRITICAL FALLBACK: Return absolute empty string if no valid text retrieved.
     if not retrieved_texts:
         return ""
 
