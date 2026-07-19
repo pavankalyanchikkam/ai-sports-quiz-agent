@@ -8,12 +8,12 @@
     "fact": "Cricket legend Don Bradman retired with a Test batting average of 99.94, the highest batting average in the history of Test cricket."
   },
   {
-    "sport": "Badminton",
-    "fact": "The Thomas Cup, established in 1948, is the premier international men's team badminton championship. India won its historic first title in 2022 by defeating Indonesia 3-0."
+    "sport": "Cricket",
+    "fact": "Sachin Tendulkar is the only cricketer in history to score 100 international centuries — 51 in Tests and 49 in ODIs — across a career spanning 24 years from 1989 to 2013."
   },
   {
-    "sport": "Badminton",
-    "fact": "Badminton was introduced as an official Olympic sport at the 1992 Barcelona Summer Games. China has historically been the dominant nation in Olympic badminton."
+    "sport": "Cricket",
+    "fact": "The first ICC Cricket World Cup in limited-overs format was held in England in 1975. West Indies won the inaugural title by defeating Australia in the final."
   },
   {
     "sport": "Football",
@@ -24,12 +24,40 @@
     "fact": "Brazil has won the FIFA World Cup a record five times, in 1958, 1962, 1970, 1994, and 2002, making them the most successful nation in World Cup history."
   },
   {
+    "sport": "Football",
+    "fact": "Pelé is the only footballer in history to win three FIFA World Cup titles, achieving this feat with Brazil in 1958, 1962, and 1970."
+  },
+  {
+    "sport": "Football",
+    "fact": "The UEFA Champions League, previously known as the European Cup, was first held in the 1955–56 season and won by Real Madrid. Real Madrid has since won the tournament a record 14 times."
+  },
+  {
     "sport": "Tennis",
     "fact": "Wimbledon is the oldest tennis tournament in the world, founded in 1877. It is one of the four Grand Slam tournaments alongside the US Open, French Open, and Australian Open."
   },
   {
     "sport": "Tennis",
-    "fact": "Roger Federer holds the record for the most Wimbledon men's singles titles, winning the championship eight times. Novak Djokovic and Rafael Nadal have also won more than 20 Grand Slam titles each."
+    "fact": "Roger Federer holds the record for the most Wimbledon men's singles titles, winning the championship eight times between 2003 and 2017."
+  },
+  {
+    "sport": "Tennis",
+    "fact": "Novak Djokovic and Rafael Nadal have each won more than 20 Grand Slam singles titles, making them among the most decorated players in tennis history."
+  },
+  {
+    "sport": "Tennis",
+    "fact": "Serena Williams won 23 Grand Slam singles titles, making her the most decorated player in the Open Era. She won her first Grand Slam at the 1999 US Open."
+  },
+  {
+    "sport": "Badminton",
+    "fact": "The Thomas Cup, established in 1948, is the premier international men's team badminton championship. India won its historic first title in 2022 by defeating Indonesia 3-0."
+  },
+  {
+    "sport": "Badminton",
+    "fact": "Badminton was introduced as an official Olympic sport at the 1992 Barcelona Summer Games. China has historically been the dominant nation in Olympic badminton."
+  },
+  {
+    "sport": "Badminton",
+    "fact": "Lin Dan of China, nicknamed Super Dan, is the first player to win all nine major BWF titles. He won two consecutive Olympic gold medals in 2008 (Beijing) and 2012 (London)."
   },
   {
     "sport": "Basketball",
@@ -38,5 +66,9 @@
   {
     "sport": "Basketball",
     "fact": "Michael Jordan won six NBA Championships with the Chicago Bulls in 1991, 1992, 1993, 1996, 1997, and 1998, and is widely regarded as the greatest basketball player of all time."
+  },
+  {
+    "sport": "Basketball",
+    "fact": "LeBron James became the NBA all-time leading scorer on February 7, 2023, surpassing Kareem Abdul-Jabbar's record of 38,387 career points. LeBron was drafted first overall by the Cleveland Cavaliers in 2003."
   }
 ]
