@@ -4,7 +4,6 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-0.4.22%2B-orange)](https://www.trychroma.com/)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5--turbo-10A37F?logo=openai&logoColor=white)](https://openai.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > An intelligent AI agent that automatically generates **fact-checked, hallucination-resistant** multiple-choice sports quizzes for social media — powered by **Retrieval-Augmented Generation (RAG)** using ChromaDB, DuckDuckGo, and OpenAI GPT.
 
