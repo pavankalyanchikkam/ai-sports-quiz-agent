@@ -9,7 +9,22 @@ from src.database import setup_and_populate_db
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 1.  One-time startup — warm up the local ChromaDB vector knowledge base
+# 1.  Page configuration — MUST be the very first st.* call in the script.
+#     Streamlit raises a StreamlitAPIException if any st.* command runs before
+#     this, including @st.cache_resource function calls.
+# ─────────────────────────────────────────────────────────────────────────────
+st.set_page_config(
+    page_title="AI Sports Quiz Agent",
+    page_icon="🏆",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2.  One-time startup — warm up the local ChromaDB vector knowledge base.
+#     @st.cache_resource ensures this runs exactly once per server session,
+#     not on every page interaction or browser refresh.
 # ─────────────────────────────────────────────────────────────────────────────
 @st.cache_resource
 def prepare_knowledge_base():
@@ -18,17 +33,6 @@ def prepare_knowledge_base():
 
 
 prepare_knowledge_base()
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# 2.  Page configuration
-# ─────────────────────────────────────────────────────────────────────────────
-st.set_page_config(
-    page_title="AI Sports Quiz Agent",
-    page_icon="🏆",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
