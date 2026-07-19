@@ -298,10 +298,3 @@ Subsequent runs load from the local cache instantly.
 
 ---
 
-## 📜 License
-
-This project is licensed under the **MIT License**.
-
----
-
-*Built for the Statupbox AI Product/Engineer Intern Assignment — July 2026.*
