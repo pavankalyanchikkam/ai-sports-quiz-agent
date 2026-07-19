@@ -123,8 +123,8 @@ if generate_btn:
             # Store the quiz result AND the sport/difficulty at generation time
             st.session_state.quiz_output     = quiz_text
             st.session_state.quiz_context    = context_used
-            st.session_state.quiz_sport      = sport_choice      # ← FIX
-            st.session_state.quiz_difficulty = difficulty         # ← FIX
+            st.session_state.quiz_sport      = sport_choice      
+            st.session_state.quiz_difficulty = difficulty         
             st.success("✅ Quiz generated successfully!")
             st.balloons()
         except Exception as exc:
